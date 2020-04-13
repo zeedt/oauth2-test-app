@@ -18,7 +18,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
 
 @Configuration
-//@Order(1)
+@Order(1)
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -31,14 +31,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         SessionRegistry sessionRegistry = new SessionRegistryImpl();
-        http.authorizeRequests().anyRequest().fullyAuthenticated()
+        http.authorizeRequests()
+                .anyRequest().fullyAuthenticated()
                 .and().sessionManagement()
                 .maximumSessions(2)
                 .sessionRegistry(sessionRegistry)
                 .maxSessionsPreventsLogin(false)
                 .and().sessionAuthenticationStrategy(new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry))
-                .and().csrf().disable();
-//        super.configure(http);
+                .and()
+                .formLogin().permitAll();
     }
 
     @Override
