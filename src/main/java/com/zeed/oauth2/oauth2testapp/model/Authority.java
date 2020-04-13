@@ -12,7 +12,7 @@ public class Authority implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return getAuthority();
+        return this.authority;
     }
 
     public void setAuthority(String authority) {

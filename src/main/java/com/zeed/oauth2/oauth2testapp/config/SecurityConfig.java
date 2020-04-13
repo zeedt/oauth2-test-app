@@ -11,8 +11,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
 
 @Configuration
 //@Order(1)
@@ -27,7 +30,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        super.configure(http);
+        SessionRegistry sessionRegistry = new SessionRegistryImpl();
+        http.authorizeRequests().anyRequest().fullyAuthenticated()
+                .and().sessionManagement()
+                .maximumSessions(2)
+                .sessionRegistry(sessionRegistry)
+                .maxSessionsPreventsLogin(false)
+                .and().sessionAuthenticationStrategy(new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry))
+                .and().csrf().disable();
+//        super.configure(http);
     }
 
     @Override
